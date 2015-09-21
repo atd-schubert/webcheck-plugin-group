@@ -1,6 +1,6 @@
 {
   "name": "webcheck-plugin-group",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Manage groups of webcheck plugins",
   "main": "plugin-group.js",
   "directories": {
