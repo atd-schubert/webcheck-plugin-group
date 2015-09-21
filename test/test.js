@@ -8,6 +8,8 @@ var PluginGroup = require('../');
 
 var Webcheck = require('webcheck');
 
+var WebcheckPlugin = require('webcheck/plugin');
+
 /*jslint debug:true*/
 var emptyFunction = function () {};
 /*jslint debug:false*/
@@ -221,6 +223,64 @@ describe('Plugin Group', function () {
         webcheck.addPlugin(group);
         group.enable();
         group.disable();
+    });
+
+    it('should work with a real plugin', function (done) {
+        var group,
+            crawl,
+            queue,
+            middleware,
+            result,
+            on = {
+                on: function (str, cb) {
+                    if (str !== 'response') {
+                        return;
+                    }
+                    setTimeout(function () {
+                        cb({});
+                    }, 1);
+                    return on;
+                }
+            },
+            RealPlugin = function () {
+                WebcheckPlugin.apply(this, arguments);
+                this.on.crawl = function () {
+                    crawl = true;
+                };
+                this.on.queue = function () {
+                    queue = true;
+                };
+                this.on.result = function () {
+                    result = true;
+                };
+                this.middleware = function (result, next) {
+                    middleware = true;
+                    next();
+                };
+            };
+
+        RealPlugin.prototype = {
+            '__proto__': WebcheckPlugin.prototype
+        };
+        webcheck = new Webcheck();
+
+        webcheck.request = function () {
+            return on;
+        };
+        group = new PluginGroup({
+            plugins: [new RealPlugin()]
+        });
+
+        webcheck.addPlugin(group);
+        group.enable();
+
+        webcheck.crawl({url: 'something'}, function () {
+            if (crawl && queue && result && middleware) {
+                return done();
+            }
+            done(new Error('Not call every function'));
+        });
+
     });
 
 });
