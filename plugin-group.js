@@ -14,14 +14,14 @@ var pkg = require('./package.json');
  * @augments Webcheck.Plugin
  * @constructor
  */
-var MirrorPlugin = function (opts) {
+var PluginGroup = function (opts) {
     WebcheckPlugin.apply(this, arguments);
 
     opts = opts || {};
     this.plugins = opts.plugins || [];
 };
 
-MirrorPlugin.prototype = {
+PluginGroup.prototype = {
     '__proto__': WebcheckPlugin.prototype,
     package: pkg,
 
@@ -52,4 +52,4 @@ MirrorPlugin.prototype = {
     plugins: null
 };
 
-module.exports = MirrorPlugin;
+module.exports = PluginGroup;
