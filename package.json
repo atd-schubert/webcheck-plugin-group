@@ -1,13 +1,16 @@
 {
   "name": "webcheck-plugin-group",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Manage groups of webcheck plugins",
   "main": "plugin-group.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "prepublish": "tsc; ts-npm-lint --fix-typings"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,9 @@
   },
   "homepage": "https://github.com/atd-schubert/webcheck-plugin-group#readme",
   "dependencies": {
-    "webcheck": "^1.0.0"
+    "webcheck": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.10"
   }
 }

@@ -1,25 +1,23 @@
-/*jslint node:true*/
+/// <reference path="../typings/main.d.ts" />
 
-/*global describe, it, before, after, beforeEach, afterEach*/
+import { PluginGroup } from '../plugin-group';
+import {Webcheck} from 'webcheck';
 
-'use strict';
+/* tslint:disable:align */
 
-var PluginGroup = require('../');
 
-var Webcheck = require('webcheck');
+/* tslint:disable:no-empty */
+var emptyFunction: Function = (): void => {};
+/* tslint:enable:no-empty */
 
-/*jslint debug:true*/
-var emptyFunction = function () {};
-/*jslint debug:false*/
-
-describe('Plugin Group', function () {
-    var webcheck;
-    before(function () {
-        webcheck = new Webcheck();
+describe('Plugin Group', (): void => {
+    var webcheck: Webcheck;
+    before((): void => {
+        webcheck = new Webcheck({});
     });
-    it('should set plugins on instantiation', function () {
-        var dummyPlugin = {},
-            group = new PluginGroup({
+    it('should set plugins on instantiation', (): void => {
+        var dummyPlugin: any = {},
+            group: PluginGroup = new PluginGroup({
                 plugins: [dummyPlugin]
             });
         if (group.plugins.length !== 1) {
@@ -29,10 +27,11 @@ describe('Plugin Group', function () {
             throw new Error('Wrong plugin added');
         }
     });
-    it('should push plugins', function () {
-        var dummyPlugin = {},
-            group = new PluginGroup({
-                plugins: [{}]
+    it('should push plugins', (): void => {
+        var dummyPlugin: any = {},
+            anotherPlugin: any = {},
+            group: PluginGroup = new PluginGroup({
+                plugins: [anotherPlugin]
             });
 
         group.plugins.push(dummyPlugin);
@@ -44,10 +43,11 @@ describe('Plugin Group', function () {
             throw new Error('Wrong plugin added or on wrong position added');
         }
     });
-    it('should unshift plugins', function () {
-        var dummyPlugin = {},
-            group = new PluginGroup({
-                plugins: [{}]
+    it('should unshift plugins', (): void => {
+        var dummyPlugin: any = {},
+            anotherPlugin: any = {},
+            group: PluginGroup = new PluginGroup({
+                plugins: [anotherPlugin]
             });
 
         group.plugins.unshift(dummyPlugin);
@@ -59,26 +59,26 @@ describe('Plugin Group', function () {
             throw new Error('Wrong plugin added or on wrong position added');
         }
     });
-    it('should register grouped plugins', function (done) {
-        var dummyPlugin = {
-                register: function (handle) {
+    it('should register grouped plugins', (done: MochaDone): void => {
+        var dummyPlugin: any = {
+                register: (handle: Webcheck): void => {
                     if (handle === webcheck) {
                         return done();
                     }
                     return done(new Error('Wrong webcheck handle passed'));
                 }
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [dummyPlugin]
             });
 
         webcheck.addPlugin(group);
     });
-    it('should register plugins in correct order', function (done) {
-        var first,
-            second,
-            firstPlugin = {
-                register: function (handle) {
+    it('should register plugins in correct order', (done: MochaDone): void => {
+        var first: boolean,
+            second: boolean,
+            firstPlugin: any = {
+                register: (handle: Webcheck): void => {
                     if (handle === webcheck) {
                         first = true;
                         return;
@@ -86,8 +86,8 @@ describe('Plugin Group', function () {
                     return done(new Error('Wrong webcheck handle passed'));
                 }
             },
-            secondPlugin = {
-                register: function (handle) {
+            secondPlugin: any = {
+                register: (handle: Webcheck): void => {
                     if (handle === webcheck && first) {
                         second = true;
                         return;
@@ -95,15 +95,15 @@ describe('Plugin Group', function () {
                     return done(new Error('Wrong webcheck handle passed or first plugin was not registered first'));
                 }
             },
-            thirdPlugin = {
-                register: function (handle) {
+            thirdPlugin: any = {
+                register: (handle: Webcheck): void => {
                     if (handle === webcheck && second) {
                         return done();
                     }
                     return done(new Error('Wrong webcheck handle passed or first and second plugin was not registered before'));
                 }
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [secondPlugin]
             });
 
@@ -112,49 +112,49 @@ describe('Plugin Group', function () {
 
         webcheck.addPlugin(group);
     });
-    it('should enable grouped plugins', function (done) {
-        var dummyPlugin = {
-                register: emptyFunction,
-                enable: function () {
+    it('should enable grouped plugins', (done: MochaDone): void => {
+        var dummyPlugin: any = {
+                enable: (): void => {
                     return done();
-                }
+                },
+                register: emptyFunction
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [dummyPlugin]
             });
 
         webcheck.addPlugin(group);
         group.enable();
     });
-    it('should enable plugins in correct order', function (done) {
-        var first,
-            second,
-            firstPlugin = {
-                register: emptyFunction,
-                enable: function () {
+    it('should enable plugins in correct order', (done: MochaDone): void => {
+        var first: boolean,
+            second: boolean,
+            firstPlugin: any = {
+                enable: (): void => {
                     first = true;
-                }
+                },
+                register: emptyFunction
             },
-            secondPlugin = {
-                register: emptyFunction,
-                enable: function () {
+            secondPlugin: any = {
+                enable: (): void => {
                     if (first) {
                         second = true;
                         return;
                     }
                     done(new Error('Not enabled first plugin before'));
-                }
+                },
+                register: emptyFunction
             },
-            thirdPlugin = {
-                register: emptyFunction,
-                enable: function () {
+            thirdPlugin: any = {
+                enable: (): void => {
                     if (second) {
                         return done();
                     }
                     done(new Error('Not enabled second plugin before'));
-                }
+                },
+                register: emptyFunction
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [secondPlugin]
             });
 
@@ -164,15 +164,15 @@ describe('Plugin Group', function () {
         webcheck.addPlugin(group);
         group.enable();
     });
-    it('should disable grouped plugins', function (done) {
-        var dummyPlugin = {
-                register: emptyFunction,
-                enable: emptyFunction,
-                disable: function () {
+    it('should disable grouped plugins', (done: MochaDone): void => {
+        var dummyPlugin: any = {
+                disable: (): void => {
                     return done();
-                }
+                },
+                enable: emptyFunction,
+                register: emptyFunction
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [dummyPlugin]
             });
 
@@ -180,38 +180,38 @@ describe('Plugin Group', function () {
         group.enable();
         group.disable();
     });
-    it('should disable plugins in correct order', function (done) {
-        var first,
-            second,
-            firstPlugin = {
-                register: emptyFunction,
-                enable: emptyFunction,
-                disable: function () {
+    it('should disable plugins in correct order', (done: MochaDone): void => {
+        var first: boolean,
+            second: boolean,
+            firstPlugin: any = {
+                disable: (): void => {
                     first = true;
-                }
-            },
-            secondPlugin = {
-                register: emptyFunction,
+                },
                 enable: emptyFunction,
-                disable: function () {
+                register: emptyFunction
+            },
+            secondPlugin: any = {
+                disable: (): void => {
                     if (first) {
                         second = true;
                         return;
                     }
                     done(new Error('Not enabled first plugin before'));
-                }
-            },
-            thirdPlugin = {
-                register: emptyFunction,
+                },
                 enable: emptyFunction,
-                disable: function () {
+                register: emptyFunction
+            },
+            thirdPlugin: any = {
+                disable: (): void => {
                     if (second) {
                         return done();
                     }
                     done(new Error('Not enabled second plugin before'));
-                }
+                },
+                enable: emptyFunction,
+                register: emptyFunction
             },
-            group = new PluginGroup({
+            group: PluginGroup = new PluginGroup({
                 plugins: [secondPlugin]
             });
 

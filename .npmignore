@@ -27,3 +27,6 @@ build/Release
 node_modules
 
 .idea/
+
+plugin-group.ts
+index.ts
