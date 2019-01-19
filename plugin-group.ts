@@ -1,7 +1,5 @@
-/// <reference path="./typings/main.d.ts" />
-
-import { Plugin as WebcheckPlugin } from 'webcheck';
-import * as pkg from './package.json';
+import { IWebcheck, Plugin as WebcheckPlugin } from "webcheck";
+import * as pkg from "./package.json";
 
 export interface ISimplifiedRegExpr {
     test(txt: string): boolean;
@@ -28,24 +26,24 @@ export class PluginGroup extends WebcheckPlugin {
         this.plugins = opts.plugins || [];
     }
 
-    public register(): PluginGroup {
-        WebcheckPlugin.prototype.register.apply(this, arguments);
-        for (let i: number = 0; i < this.plugins.length; i += 1) {
-            this.plugins[i].register.apply(this.plugins[i], arguments);
+    public register(handle: IWebcheck): this {
+        super.register(handle);
+        for (const plugin of this.plugins) {
+            plugin.register(handle);
         }
         return this;
     }
-    public enable(): PluginGroup {
-        WebcheckPlugin.prototype.enable.apply(this, arguments);
-        for (let i: number = 0; i < this.plugins.length; i += 1) {
-            this.plugins[i].enable.apply(this.plugins[i], arguments);
+    public enable(...args: any[]): this {
+        super.enable(...args);
+        for (const plugin of this.plugins) {
+            plugin.enable(...args);
         }
         return this;
     }
-    public disable(): PluginGroup {
-        WebcheckPlugin.prototype.disable.apply(this, arguments);
-        for (let i: number = 0; i < this.plugins.length; i += 1) {
-            this.plugins[i].disable.apply(this.plugins[i], arguments);
+    public disable(): this {
+        super.disable();
+        for (const plugin of this.plugins) {
+            plugin.disable();
         }
         return this;
     }
